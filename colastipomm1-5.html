@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es" >
+<head>
+<meta charset="utf-8" />
+<title>investigacion operativa II</title>
+<link rel="stylesheet" href="Bcss/bootstrap.css">
+<!--<link rel="stylesheet" href="Bcss/fontawesome-all.css">-->
+<script type="text/javascript">
+function resolver(){
+var lambda=document.getElementById("lambda").value;
+var miu=document.getElementById("mu").value;
+var nroservidor=document.getElementById("nroservidor").value;
+var limitesistema=document.getElementById("limitesistema").value;
+var limiteorigen=document.getElementById("limiteorigen").value;
+if(parseFloat(lambda)==0){
+	muertepura();
+	die();
+}
+else{
+	if(parseFloat(miu)==0){
+		nacimientopuro();
+		die();
+	}
+	else{
+		if(limitesistema!=0&&limitesistema>0){
+			sistemamgd1();
+			die();
+		}else{
+			sistema();
+			die();
+		}
+	}
+}
+
+
+function nacimientopuro(){
+var lambda=parseFloat(document.getElementById("lambda").value);
+//var miu=document.getElementById("mu").value;
+var nroservidor=parseFloat(document.getElementById("nroservidor").value);
+var limitesistema=parseFloat(document.getElementById("limitesistema").value);
+var limiteorigen=parseFloat(document.getElementById("limiteorigen").value);
+var t=0,n=0/*prompt("inserte el número de evento")*/,sum=0,con=0;
+document.write("tiempo promedio entre llegadas = "+(1/lambda));
+document.write("<table border=2>");
+document.write("<tr><td>Tiempo</td><td>probabilidad</td><td>sumaprobabilidad</td></tr>");
+	for(t;t<=100;t++){
+		var facn=1;
+		if(t!=0){
+			var resultado=Math.pow(lambda*1,n)*Math.pow(2.718281828,(-1)*lambda*1);
+		}else{
+			var resultado=Math.pow(2.718281828,(-1)*lambda);
+		}
+		if(n>1){
+			for(var i=1;i<=n;i++){
+				facn=facn*i;
+			}
+		}
+		resultado=resultado/facn;
+		sum=sum+resultado;
+		/*else{
+			limitesistema=limitesistema+1;
+		}*/
+		
+		/*if(con==1){
+		n=1;
+		t=0;
+		//n=n+1;
+		}*/
+		n=n+1;
+		document.write("<tr><td>"+t+"</td><td>"+resultado+"</td><td>"+sum+"</td></tr>");
+		if(sum>1){
+		t=100;
+		}
+		//con=con+1;
+		}
+	}
+				
+document.write("</table>");
+document.write("<a href='nacimientospuros.html'>volver</a>");
+
+
+function muertepura(){
+//var lambda=parseFloat(document.getElementById("lambda").value);
+var miu=parseFloat(document.getElementById("mu").value);
+var nroservidor=parseFloat(document.getElementById("nroservidor").value);
+var limitesistema=parseFloat(document.getElementById("limitesistema").value);
+var limiteorigen=parseFloat(document.getElementById("limiteorigen").value);
+var resultados=new Array();
+document.write("tiempo promedio entre salidas = "+(1/miu));
+var t=1,N=limiteorigen/*prompt("ingrese la cantidad de eventos")*/,n=prompt("ingrese el evento mayor a cero"),sum=0;
+for(t;t<=limitesistema;t++){
+		var facn=1;
+		//var resultado=Math.pow(miu*t,limitesistema-n)*Math.pow(2.718281828,(-1)*miu*t);
+		var resultado=Math.pow(miu*t,(N-n))*Math.pow(2.718281828,(-1)*miu*t);
+		//if(n<=limitesistema){
+			for(var i=1;i<=(N-n);i++){
+				facn=facn*i;
+			}
+		//}
+		resultado=resultado/facn;
+		sum=sum+resultado;
+		resultados[t]=resultado;
+		//n=n+1;
+		if(sum>=1){
+		t=limitesistema;
+		}
+	}
+	resultados[0]=(1-sum);
+	sum=0;
+document.write("<table border=2>");
+document.write("<tr><td>Tiempo</td><td>probabilidad</td><td>sumaprobabilidad</td></tr>");
+	for(t=0;t<=limitesistema;t++){
+		
+	/*	var facn=1;
+		var resultado=Math.pow(lambda*t,n)*Math.pow(2.718281828,(-1)*lambda*t);
+		if(n>1){
+			for(var i=1;i<=n;i++){
+				facn=facn*i;
+			}
+		}
+		resultado=resultado/facn;
+		sum=sum+resultado;
+		n=n+1;*/
+		sum=sum+parseFloat(resultados[t]);
+		document.write("<tr><td>"+(t)+"</td><td>"+resultados[t]+"</td><td>"+sum+"</td></tr>");
+		if(sum>=1){
+		t=limitesistema;
+		}
+	}
+				
+document.write("</table>");
+document.write("<a href='nacimientospuros.html'>volver</a>");
+}
+function sistema(){
+	var lambda=document.getElementById("lambda").value;
+	var miu=document.getElementById("mu").value;
+	var cantidad=document.getElementById("nroservidor").value;
+	
+	if(cantidad>0&&cantidad<2){
+	//condición de estabilidad Lambda entre miu menor a uno
+		if((lambda/miu)<1){
+			sistemamm1();
+			die();
+		}
+		else{
+			alert("no se puede resolver este ejercicio");
+			resolver();
+		}
+		
+	}else{
+		if(lambda<(cantidad*miu)){
+			sistemammc();
+			die();
+		}else{
+			alert("no se puede resolver este ejercicio");
+			resolver();
+		}
+	}
+}
+
+
+
+function sistemamm1(){
+var lambda=document.getElementById("lambda").value;
+var miu=document.getElementById("mu").value;
+var cantidad=document.getElementById("nroservidor").value;
+var resultado=0;
+
+resultado =lambda/miu;
+document.write("Intensidad de tráfico<br>");
+document.write("r = "+resultado+"<br>");
+
+resultado =(lambda/miu)/(1-(lambda/miu));
+document.write("Número medio de unidades en el sistema<br>");
+document.write("L = "+resultado+"<br>");
+
+resultado =lambda/(miu-lambda);
+document.write("Número promedio de unidades en el sistema<br>");
+document.write("L<sub>s</sub> = "+resultado+"<br>");
+
+resultado=lambda/(cantidad*miu);
+document.write("Factor de utilizacion del sistema<br>");
+document.write("&rho; = "+resultado+"<br>");
+
+resultado=((lambda/miu)/(1-(lambda/miu)))/lambda;
+document.write("Tiempo medio de espera en el sistema<br>");
+document.write("W = "+resultado+"<br>");
+var W=resultado;
+
+resultado=1/(miu-lambda);
+document.write("Tiempo promedio que una unidad pasa en el sistema<br>");
+document.write("W<sub>s</sub> = "+resultado+"<br>");
+
+resultado =Math.pow((lambda/miu),2)/(1-(lambda/miu));
+document.write("Número de unidades la cola<br>");
+document.write("L<sub>q(verificar)</sub> = "+resultado+"<br>");
+
+resultado =1/(1-(lambda/miu));
+document.write("Número esperado de unidades en la cola cuando hay cola<br>");
+document.write("L'<sub>q</sub> = "+resultado+"<br>");
+
+resultado =Math.pow(lambda,2)/(miu*(miu-lambda));
+document.write("Número promedio de unidades en la cola<br>");
+document.write("L<sub>q</sub> = "+resultado+"<br>");
+
+resultado =(Math.pow((lambda/miu),2)/(1-(lambda/miu)))/lambda;
+document.write("Tiempo medio que una unidad espera en la cola<br>");
+document.write("W<sub>q(verificar)</sub> = "+resultado+"<br>");
+
+resultado=((lambda/miu)/(1-(lambda/miu)))/lambda;
+document.write("Tiempo medio que una unidad espera en la cola<br>");
+document.write("W'<sub>q</sub> = "+resultado+"<br>");
+
+resultado =lambda/(miu*(miu-lambda));
+document.write("Tiempo promedio que una unidad espera en la cola<br>");
+document.write("W<sub>q</sub> = "+resultado+"<br>");
+
+var n=prompt("ingrese el valor de cantidad a calcular");
+resultado=(1-(lambda/miu))*Math.pow((lambda/miu),n);
+document.write("Probabilidad de "+n+" unidades en el sistema<br>");
+document.write("P<sub>"+n+"</sub> = "+resultado+"<br>");
+
+resultado=1-(lambda/miu);
+document.write("Probabilidad de 0 unidades en el sistema<br>");
+document.write("P<sub>0</sub> = "+resultado+"<br>");
+
+var k=prompt("ingrese el valor de cantidad a calcular mayor al anterior");
+resultado=Math.pow((lambda/miu),(k+1));
+document.write("Probabilidad de "+k+" unidades de encuentren en el sistema<br>");
+document.write("P<sub>"+k+"</sub> = "+resultado+"<br>");
+
+n=prompt("ingrese el nuevo valor de cantidad de unidades a encontrar");
+resultado=Math.pow((lambda/miu),n);
+document.write("Probabilidad de encontrar al menos "+n+" unidades<br>");
+document.write("P<sub>("+n+">"+miu+")</sub> = "+resultado+"<br>");
+
+n=prompt("ingrese el tiempo a encontrar");
+resultado=1-((lambda/miu)*Math.pow(2.718281828,(-n/W)));
+document.write("Distribución de la variable q<br>");
+document.write("F<sub>q</sub>(t) = "+resultado+"<br>");
+
+resultado=1-Math.pow(2.718281828,(-n/W));
+document.write("Distribución de la variable w<br>");
+document.write("F<sub>w</sub>(t) = "+resultado+"<br>");
+
+
+resultado=((lambda/miu)-Math.pow((lambda/miu),2))/(1-(lambda/miu));
+document.write("Cantidad de servidores ocupados<br>");
+document.write("č = "+resultado+"<br>");
+
+
+document.write("<a href='nacimientospuros.html'>volver</a>");
+}
+
+
+
+function sistemammc(){
+	//alert("aún no definido");
+	var lambda=document.getElementById("lambda").value;
+	var miu=document.getElementById("mu").value;
+	var em=document.getElementById("nroservidor").value;
+	var resultado=0,nfac=1,mfac=1,sum=0;
+	for(var n=0;n<em;n++){
+	//buscando el factorial
+		for(var mul=0;mul<=n;mul++){
+			if(mul>0){
+				nfac=nfac*mul;
+			}else{
+				nfac=1;
+			}
+		}
+		sum=sum+(1/nfac)*Math.pow(lambda/miu,n);
+	}
+	for(var m=0;m<=em;m++){
+		if(m>0){
+			mfac=mfac*m;
+		}else{
+			mfac=1;
+		}
+	}
+	sum=sum+((1/mfac)*Math.pow(lambda/miu,em)*((em*miu)/(em*miu-lambda)));
+	resultado=1/sum;
+	document.write("Probabilidad de 0 unidades en el sistema<br>");
+	document.write("P<sub>0</sub> = "+resultado+"<br>");
+	
+	sum=resultado;
+	for(var mul=0;mul<em;mul++){
+		if(mul>0){
+			nfac=nfac*mul;
+		}else{
+			nfac=1;
+		}
+	}
+	resultado =((lambda*miu*Math.pow(lambda/miu,em))/(nfac*Math.pow(em*miu-lambda,2)))*sum+(lambda/miu);
+	document.write("Número promedio de unidades en el sistema<br>");
+	document.write("L<sub>s</sub> = "+resultado+"<br>");
+	mfac=resultado;
+	
+	resultado=((miu*Math.pow(lambda/miu,em))/(nfac*Math.pow(em*miu-lambda,2)))*sum+(1/miu);
+	document.write("Tiempo promedio que una unidad pasa en el sistema<br>");
+	document.write("W<sub>s</sub> = "+resultado+"<br>");
+	document.write("W<sub>s</sub> = "+(mfac/lambda)+"<br>");
+	nfac=resultado;
+	
+	resultado =mfac-(lambda/miu);
+	document.write("Número promedio de unidades en la cola<br>");
+	document.write("L<sub>q</sub> = "+resultado+"<br>");
+	
+	resultado =nfac-(1/miu);
+	document.write("Tiempo promedio que una unidad espera en la cola<br>");
+	document.write("W<sub>q</sub> = "+resultado+"<br>");
+	document.write("W<sub>q</sub> = "+((mfac-(lambda/miu))/lambda)+"<br>");
+	
+	
+	resultado =lambda/miu;
+	document.write("Intensidad de trafico<br>");
+	document.write("r = "+resultado+"<br>");
+	
+	resultado =lambda/(em*miu);
+	document.write("Intensidad de trafico<br>");
+	document.write("&rho; = "+resultado+"<br>");
+	
+	nfac=1,mfac=1,sum=0;
+	for(var n=0;n<em;n++){
+	//buscando el factorial
+		for(var mul=0;mul<=n;mul++){
+			if(mul>0){
+				nfac=nfac*mul;
+			}else{
+				nfac=1;
+			}
+		}
+		sum=sum+(Math.pow(lambda/miu,n)/nfac);
+	}
+	for(var m=0;m<=em;m++){
+		if(m>0){
+			mfac=mfac*m;
+		}else{
+			mfac=1;
+		}
+	}
+	sum=sum+((Math.pow((lambda/miu),em)/mfac)*(1/(1-(lambda/(em*miu)))));
+	resultado=1/sum;
+	document.write("Probabilidad de que no hayan unidades en el sistema<br>");
+	document.write("P<sub>0</sub> = "+resultado+"<br>");
+	
+	probcero=resultado;
+	var nu=prompt("ingrese el valor de cantidad a calcular");
+	for(var mul=0;mul<=nu;mul++){
+		if(mul>0){
+			nfac=nfac*mul;
+		}else{
+			nfac=1;
+		}
+	}
+	if(nu>0){
+		if(nu>em){
+			resultado=(Math.pow((lambda/miu),nu)*probcero)/(mfac*Math.pow(em,(nu-em)));
+		}else{
+			resultado=(Math.pow((lambda/miu),nu)*probcero)/nfac;
+		}
+	}
+	document.write("Probabilidad de que haya "+nu+" unidades en el sistema<br>");
+	document.write("P<sub>"+nu+"</sub> = "+resultado+"<br>");
+	
+	for(var mul=0;mul<=em;mul++){
+		if(mul>0){
+			nfac=nfac*mul;
+		}else{
+			nfac=1;
+		}
+	}
+	//	if(nu>em){
+			resultado=((Math.pow((lambda/miu),em)*probcero)/mfac)/(1-(lambda/(em*miu)));
+	/*	}else{
+			resultado=(Math.pow((lambda/miu),nu)*probcero)/(mfac*Math.pow(em,nu-em));
+		}*/
+	document.write("Probabilidad de tener que esperar cola<br>");
+	document.write("P<sub>N>"+em+"</sub> = "+resultado+"<br>");
+	
+	resultado=probcero*(Math.pow((lambda/miu),em)/mfac)*((lambda/(em*miu))/Math.pow((1-(lambda/(em*miu))),2));
+	document.write("Número promedio en la cola<br>");
+	document.write("L<sub>q</sub> = "+resultado+"<br>");
+	
+	resultado=(((Math.pow((lambda/miu),em)*probcero)/mfac)/(1-(lambda/(em*miu))))*((lambda/(em*miu))/(1-(lambda/(em*miu))));
+	document.write("Número promedio en la cola<br>");
+	document.write("L<sub>q(verificar)</sub> = "+resultado+"<br>");
+	
+	resultado=(probcero*(Math.pow((lambda/miu),em)/mfac)*((lambda/(em*miu))/Math.pow((1-(lambda/(em*miu))),2)))/lambda;
+	document.write("Tiempo promedio de espera en la cola<br>");
+	document.write("W<sub>q</sub> = "+resultado+"<br>");
+	
+	resultado=1/(em*miu*(1-(lambda/(em*miu))));
+	document.write("Tiempo promedio de espera en la cola para quienes tengan que esperar<br>");
+	document.write("W'<sub>q</sub> = "+resultado+"<br>");
+	
+	resultado=((probcero*(Math.pow((lambda/miu),em)/mfac)*((lambda/(em*miu))/Math.pow((1-(lambda/(em*miu))),2)))/lambda)+(1/miu);
+	document.write("Tiempo promedio de espera en el sistema<br>");
+	document.write("W = "+resultado+"<br>");
+	
+	resultado=lambda*(((probcero*(Math.pow((lambda/miu),em)/mfac)*((lambda/(em*miu))/Math.pow((1-(lambda/(em*miu))),2)))/lambda)+(1/miu));
+	document.write("Numero promedio en el sistema<br>");
+	document.write("L = "+resultado+"<br>");
+	
+	var ti=prompt("ingrese el tiempo a calcular");
+	resultado=1-((((Math.pow((lambda/miu),em)*probcero)/mfac)/(1-(lambda/(em*miu))))*Math.pow(2.718281828,(-1)*(1-(lambda/(em*miu)))*em*miu*ti));
+	document.write("Distribución de la variable q<br>");
+	document.write("F<sub>q</sub>(t) = "+resultado+"<br>");
+	
+	if((lambda/miu)!=(em-1)){
+		resultado=1+(((lambda/miu)-em+1-((((Math.pow((lambda/miu),em)*probcero)/mfac)/(1-(lambda/(em*miu)))))/(em-1-(lambda/miu)))*Math.pow(2.718281828,(miu*ti)))+(((((Math.pow((lambda/miu),em)*probcero)/mfac)/(1-(lambda/(em*miu))))/(em-1-(lambda/miu)))*Math.pow(2.718281828,(-1)*(1-(lambda/(em*miu)))*em*miu*ti));
+	}else{
+		resultado=1+((1+(((Math.pow((lambda/miu),em)*probcero)/mfac)/(1-(lambda/(em*miu)))))*Math.pow(2.718281828,(-1)*miu*ti));
+	}
+	document.write("Distribución de la variable w<br>");
+	document.write("F<sub>w</sub>(t) = "+resultado+"<br>");
+	
+	/*
+	
+	resultado=lambda/(cantidad*miu);
+	document.write("Factor de utilizacion del sistema<br>");
+	document.write("&rho; = "+resultado+"<br>");
+
+
+
+	var n=prompt("ingrese el valor de cantidad a calcular");
+	resultado=(1-(lambda/miu))*Math.pow((lambda/miu),n);
+	document.write("Probabilidad de "+n+" unidades en el sistema<br>");
+	document.write("P<sub>"+n+"</sub> = "+resultado+"<br>");
+
+	var k=prompt("ingrese el valor de cantidad a calcular");
+	resultado=Math.pow((lambda/miu),k+1);
+	document.write("Probabilidad de "+k+" unidades de encuentren en el sistema<br>");
+	document.write("P<sub>"+k+"</sub> = "+resultado+"<br>");*/
+	document.write("<a href='nacimientospuros.html'>volver</a>");
+
+}
+function sistemamgd1(){
+	//alert("aún no definido");
+	var lambda=document.getElementById("lambda").value;
+	var miu=document.getElementById("mu").value;
+	var cantidad=document.getElementById("limitesistema").value;
+	var resultado=0,ele=0;
+	
+	resultado =Math.pow(lambda,2)/(2*miu*(miu-lambda));
+	document.write("Número promedio de unidades en la cola<br>");
+	document.write("L<sub>q</sub> = "+resultado+"<br>");
+	
+	resultado =resultado+(lambda/miu);
+	document.write("Número promedio de unidades en el sistema<br>");
+	document.write("L<sub>s</sub> = "+resultado+"<br>");
+	
+	resultado =lambda/(2*miu*(miu-lambda));
+	document.write("Tiempo promedio que una unidad espera en la cola<br>");
+	document.write("W<sub>q</sub> = "+resultado+"<br>");
+	
+	resultado=resultado+(1/miu);
+	document.write("Tiempo promedio que una unidad pasa en el sistema<br>");
+	document.write("W<sub>s</sub> = "+resultado+"<br>");
+	
+	resultado=lambda/miu;
+	document.write("Intensidad de trafico<br>");
+	document.write("r = "+resultado+"<br>");
+	
+	document.write("Probabilidad de que existan "+cantidad+" unidades<br>");
+	var sumaprob=0;
+	if(lambda==miu){
+		document.write("<table border='2'>");
+		document.write("<tr><td>N</td><td>Probabilidad</td><td>sumaprobabilidad</td>");
+		for(var n1=0;n1<=cantidad;n1++){
+			resultado=1/(cantidad+1);
+			sumaprob=sumaprob+resultado;
+			document.write("<tr>")
+			document.write("<td>"+n1+"</td><td>"+resultado+"</td><td>"+sumaprob+"</td><br>");
+			document.write("</tr>")
+		}
+		document.write("</table>")
+		}else{
+			document.write("<table border='2'>");
+			document.write("<tr><td>N</td><td>Probabilidad</td><td>sumaprobabilidad</td>");
+			for(var n=0;n<=cantidad;n++){
+			resultado=Math.pow((lambda/miu),n)*((1-(lambda/miu))/(1-Math.pow((lambda/miu),(cantidad+1))));
+			sumaprob=sumaprob+resultado;
+			document.write("<tr>")
+			document.write("<td>"+n+"</td><td>"+resultado+"</td><td>"+sumaprob+"</td><br>");
+			document.write("</tr>")
+			
+		}
+		document.write("</table>")
+	}
+	
+	
+	if(lambda==miu){
+		resultado=cantidad/2;
+	}else{
+		resultado=((lambda/miu)/(1-(lambda/miu)))-(((cantidad+1)*Math.pow((lambda/miu),(cantidad+1)))/(1-Math.pow((lambda/miu),(cantidad+1))));
+	}
+	document.write("Número de unidades en el sistema<br>");
+	document.write("L = "+resultado+"<br>");
+	ele=resultado;
+	
+	if(lambda==miu){
+	resultado=1/(cantidad+1);
+	}else{
+	resultado=Math.pow((lambda/miu),0)*((1-(lambda/miu))/(1-Math.pow((lambda/miu),(cantidad+1))));
+	}
+	document.write("Número medio de unidades en el servidor<br>");
+	document.write("Ls = "+resultado+"<br>");
+	var elese=resultado;
+	
+	resultado=ele-resultado;
+	document.write("Numero promedio en la fila<br>");
+	document.write("L<sub>q</sub> = "+resultado+"<br>");
+	
+	if(lambda==miu){
+	resultado=1/(cantidad+1);
+	}else{
+	resultado=Math.pow((lambda/miu),cantidad)*((1-(lambda/miu))/(1-Math.pow((lambda/miu),(cantidad+1))));
+	}
+	resultado=lambda*(1-resultado);
+	document.write("tasa media de entradas al sistema<br>");
+	document.write("&lambda;<sub>e</sub> = "+resultado+"<br>");
+	
+	if(lambda==miu){
+		resultado=1/(cantidad+1);
+	}else{
+		resultado=Math.pow((lambda/miu),0)*((1-(lambda/miu))/(1-Math.pow((lambda/miu),(cantidad+1))));
+	}
+	document.write("Utilización del servidor<br>");
+	document.write("&rho; = "+resultado+"<br>");
+	
+	if(lambda==miu){
+	resultado=1/(cantidad+1);
+	}else{
+	resultado=Math.pow((lambda/miu),cantidad)*((1-(lambda/miu))/(1-Math.pow((lambda/miu),(cantidad+1))));
+	}
+	resultado=ele/(lambda(1-resultado));
+	document.write("Tiempo medio de espera en el sistema<br>");
+	document.write("W = "+resultado+"<br>");
+	
+	if(lambda==miu){
+	resultado=1/(cantidad+1);
+	}else{
+	resultado=Math.pow((lambda/miu),cantidad)*((1-(lambda/miu))/(1-Math.pow((lambda/miu),(cantidad+1))));
+	}
+	resultado=lambda*(1-resultado);
+	resultado=(ele-elese)/resultado;
+	document.write("Tiempo medio de espera en el cola<br>");
+	document.write("W<sub>q</sub> = "+resultado+"<br>");
+	
+	resultado=resultado/(1-elese);
+	document.write("Tiempo medio de espera en la cola si hay cola<br>");
+	document.write("W'<sub>q</sub> = "+resultado+"<br>");
+	
+	
+	/*
+	
+	resultado=lambda/(cantidad*miu);
+	document.write("Factor de utilizacion del sistema<br>");
+	document.write("&rho; = "+resultado+"<br>");
+
+
+
+	var n=prompt("ingrese el valor de cantidad a calcular");
+	resultado=(1-(lambda/miu))*Math.pow((lambda/miu),n);
+	document.write("Probabilidad de "+n+" unidades en el sistema<br>");
+	document.write("P<sub>"+n+"</sub> = "+resultado+"<br>");
+	resultado=1-(lambda/miu);
+	document.write("Probabilidad de 0 unidades en el sistema<br>");
+	document.write("P<sub>0</sub> = "+resultado+"<br>");
+	var k=prompt("ingrese el valor de cantidad a calcular");
+	resultado=Math.pow((lambda/miu),k+1);
+	document.write("Probabilidad de "+k+" unidades de encuentren en el sistema<br>");
+	document.write("P<sub>"+k+"</sub> = "+resultado+"<br>");*/
+	document.write("<a href='nacimientospuros.html'>volver</a>");
+}
+
+
+function poblim(){
+	var lambda=document.getElementById("lambda").value;
+	var miu=document.getElementById("mu").value;
+	var cantidad=document.getElementById("nroservidor").value;
+	var resultado=0;
+	
+	resultado=resultado;
+	document.write("Probabilidad de que una unidad en la cola<br>");
+	document.write("D = "+resultado+"<br>");
+	
+	resultado=resultado;
+	document.write("Factor de eficiencia<br>");
+	document.write("F = "+resultado+"<br>");
+	
+	resultado=resultado;
+	document.write("Número promedio de unidades siendo servidas<br>");
+	document.write("H = F*N*X <br>");
+	document.write("H = "+resultado+"<br>");
+	
+	resultado=resultado;
+	document.write("Número promedio de unidades que no estan en la cola o en el sector de servicio<br>");
+	document.write("J = N*F*(1-X) <br>");
+	document.write("J = "+resultado+"<br>");
+	
+	resultado=resultado;
+	document.write("Número promedio de unidades esperando el servicio<br>");
+	document.write("L = N*(1-F) <br>");
+	document.write("L = "+resultado+"<br>");
+	
+	resultado=resultado;
+	document.write("Número de canales de servicio<br>");
+	document.write("M = "+resultado+"<br>");
+	
+	resultado=resultado;
+	document.write("Número de clientes potenciales<br>");
+	document.write("N = J+L+H <br>");
+	document.write("N = "+resultado+"<br>");
+	
+	resultado=resultado;
+	document.write("Tiempo de servicio promedio<br>");
+	document.write("T = "+resultado+"<br>");
+	
+	resultado=resultado;
+	document.write("Tiempo de servicio entre requerimientos de atención a la unidad<br>");
+	document.write("U = "+resultado+"<br>");
+	
+	resultado=resultado;
+	document.write("Tiempo promedio que una unidad espera en la cola<br>");
+	document.write("W = (L*(T+U))/(N-L) <br>");
+	document.write("W = (T*(1-F))/(X*F) <br>");
+	document.write("W = "+resultado+"<br>");
+	
+	resultado=resultado;
+	document.write("Factor de servicio<br>");
+	document.write("X = T/(T+U) <br>");
+	document.write("X = "+resultado+"<br>");
+	
+	
+	/*resultado =lambda/(miu-lambda);
+	document.write("Número promedio de unidades en el sistema<br>");
+	document.write("L<sub>s</sub> = "+resultado+"<br>");
+	resultado=lambda/(cantidad*miu);
+	document.write("Factor de utilizacion del sistema<br>");
+	document.write("&rho; = "+resultado+"<br>");
+	resultado=1/(miu-lambda);
+	document.write("Tiempo promedio que una unidad pasa en el sistema<br>");
+	document.write("W<sub>s</sub> = "+resultado+"<br>");
+	resultado =Math.pow(lambda,2)/(miu*(miu-lambda));
+	document.write("Número promedio de unidades en la cola<br>");
+	document.write("L<sub>q</sub> = "+resultado+"<br>");
+	resultado =lambda/(miu*(miu-lambda));
+	document.write("Tiempo promedio que una unidad espera en la cola<br>");
+	document.write("W<sub>q</sub> = "+resultado+"<br>");
+	var n=prompt("ingrese el valor de cantidad a calcular");
+	resultado=(1-(lambda/miu))*Math.pow((lambda/miu),n);
+	document.write("Probabilidad de "+n+" unidades en el sistema<br>");
+	document.write("P<sub>"+n+"</sub> = "+resultado+"<br>");
+	resultado=1-(lambda/miu);
+	document.write("Probabilidad de 0 unidades en el sistema<br>");
+	document.write("P<sub>0</sub> = "+resultado+"<br>");
+	var k=prompt("ingrese el valor de cantidad a calcular");
+	resultado=Math.pow((lambda/miu),k+1);
+	document.write("Probabilidad de "+k+" unidades de encuentren en el sistema<br>");
+	document.write("P<sub>"+k+"</sub> = "+resultado+"<br>");*/
+	document.write("<a href='nacimientospuros.html'>volver</a>");
+}
+}
+</script>
+</head>
+
+<body>
+<h1>Bienvenidos a este enlace de soluciones de teoría de colas</h1>
+<form>
+<div class="form-group" >
+<label form="lambda" >inserte &lambda;</label>
+<input type="text" name="lambda" value="0"  id="lambda" class="form-control"  >
+</div>
+<div class="form-group" >
+<label form="mu" >inserte &mu;</label>
+<input type="text" name="mu" value="0"  id="mu" class="form-control"  >
+</div>
+<div class="form-group" >
+<label form="nroservidor" >inserte en número de servidores</label>
+<input type="text" name="nroservidor" value="0"  id="nroservidor" class="form-control"  >
+</div>
+<div class="form-group" >
+<label form="limitesistema" >inserte el límite del sistema</label>
+<input type="text" name="limitesistema" value="0"  id="limitesistema" class="form-control"  >
+</div>
+<div class="form-group" >
+<label form="limiteorigen" >inserte source limit</label>
+<input type="text" name="limiteorigen" value="0"  id="limiteorigen" class="form-control"  >
+</div>
+<div>
+<!--<button type="reset" class="btn btn-outline-primary"  >Cancelar</button>-->
+<button type="button"  class="btn btn-outline-success" onclick="resolver()">Enviar</button>
+</div>
+</form>
+<!--<h2 id="respuesta" ></h2>-->
+</body>
+</html>
