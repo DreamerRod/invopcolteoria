@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es" >
+<head>
+	<meta charset="utf-8" />
+	<title>investigacion operativa II</title>
+	<link rel="stylesheet" href="Bcss/bootstrap.css">
+	<script type="text/javascript">
+		var numeroescena;
+		function resolver() {
+			var lambda=document.getElementById("lambda").value;
+			var miu=document.getElementById("mu").value;
+			var nroservidor=document.getElementById("nroservidor").value;
+			var limitesistema=document.getElementById("limitesistema").value;
+			var limiteorigen=document.getElementById("limiteorigen").value;
+			if ( parseFloat(lambda) == 0 ) {
+				muertepura();
+				die();
+			}
+			else {
+				if ( parseFloat(miu) == 0 ) {
+					nacimientopuro();
+					die();
+				}
+				else{
+					if ( limitesistema != 0 && limitesistema > 0 ) {
+						sistemamgd1();
+						die();
+					}
+					else{
+						sistema();
+						die();
+					}
+				}
+			}
+					
+					
+			function nacimientopuro() {
+				numeroescena = prompt("ingrese el número de escenarios");
+				var lambda = parseFloat(document.getElementById("lambda").value);
+				var nroservidor = parseFloat(document.getElementById("nroservidor").value);
+				var limitesistema = parseFloat(document.getElementById("limitesistema").value);
+				var limiteorigen = parseFloat(document.getElementById("limiteorigen").value);
+				document.write("<center><table>");
+				document.write("<tr><td> Lambda &lambda; = "+lambda+"</td><td>Mu &mu;= "+0+"</td></tr>");
+				document.write("<tr><td> Lambda eff = "+lambda+"</td><td>Rho/c = </td></tr>");
+				document.write("<tr><td>L<sub>s</sub> = "+lambda+"</td><td>L<sub>q</sub> = </td></tr>");
+				document.write("<tr><td>W<sub>s</sub> = </td><td>W<sub>q</sub> = </td></tr>");
+				document.write("</table></center>");
+				if ( parseFloat(numeroescena) > 1 ) {
+					var arla = new Array() ;
+					for ( var i = 2 ; i <= numeroescena ; i++ ) {
+						arla [ i ] = prompt("ingrese el valor de lambda en la escena "+i);
+					}
+				}
+				else{
+					numeroescena = 1 ;
+				}
+				for ( var es = 1 ; es <= numeroescena ; es ++){
+					if ( es > 1 ) {
+						lambda = arla [es] ;
+					}
+					document.write("<br><h1>Escenario"+es+"</h1><br>");
+					var t = 0 , n = 0 , sum = 0 ;
+					document.write("<table border=2>");
+					document.write("<tr><td>Tiempo</td><td>probabilidad</td><td>sumaprobabilidad</td></tr>");
+					for ( t ; t <= 500 ; t ++ ) {
+						var facn=1;
+						if ( t != 0 ) {
+							var resultado=Math.pow(lambda*es,n)*Math.pow(2.718281828,(-1)*lambda*es);
+						}
+						else {
+							var resultado=Math.pow(2.718281828,(-1)*lambda);
+						}
+						if ( n > 1 ) {
+							for ( var i = 1 ; i <= n ; i ++ ) {
+								facn=facn*i;
+							}
+						}
+						resultado = resultado / facn ;
+						sum = sum + resultado ;
+						n = n + 1 ;
+						document.write ( "<tr> <td>" + t + "</td> <td>" + resultado + "</td><td>" + sum + "</td></tr>");
+						if ( sum > 1 ) {
+							t = 500;
+						}
+					}
+					document.write("</table>");
+				}
+				document.write("<a href='colastipomm1-5-1.html'>volver</a>");
+			}	
+			
+			function muertepura() {
+				numeroescena = prompt("ingrese el número de escenarios");
+				var miu = parseFloat(document.getElementById("mu").value);
+				var nroservidor = parseFloat(document.getElementById("nroservidor").value);
+				var limitesistema = parseFloat(document.getElementById("limitesistema").value);
+				var limiteorigen = parseFloat(document.getElementById("limiteorigen").value);
+				var resultados = new Array();
+				document.write("<center><table>");
+				document.write("<tr><td> Lambda &lambda; = "+lambda+"</td><td>Mu &mu;= "+miu+"</td></tr>");
+				document.write("<tr><td> Lambda eff = "+lambda+"</td><td>Rho/c = </td></tr>");
+				document.write("<tr><td>L<sub>s</sub> = "+lambda+"</td><td>L<sub>q</sub> = </td></tr>");
+				document.write("<tr><td>W<sub>s</sub> = "+(1/miu)+" </td><td>W<sub>q</sub> = </td></tr>");
+				document.write("</table></center>");
+				if ( numeroescena > 1 ) {
+					var armi = new Array();
+					for ( var i = 2; i <= numeroescena; i ++) {
+						armi [i] = prompt("ingrese el valor de lambda en la escena "+i);
+					}
+				}
+				else {
+					numeroescena = 1;
+				}
+				for ( var es = 1 ; es <= numeroescena ; es ++ ) {
+					if ( es > 1 ) {
+						miu = armi [es];
+					}
+					document.write("<br><h1>Escenario"+es+"</h1><br>");
+					var t = 1 , N = limiteorigen , n = 1 , sum = 0 ;
+					for ( t ; t <= limitesistema ; t ++ ) {
+						var facn=1;
+						var resultado=Math.pow(miu*es,(N-n))*Math.pow(2.718281828,(-1)*miu*es);
+						for(var i=1;i<=(N-n);i++){
+							facn = facn * i ;
+						}
+						resultado = resultado / facn ;
+						sum = sum + resultado ;
+						resultados [t] = resultado;
+						n = n + 1 ;
+						if ( sum >= 1 ) {
+							t = limitesistema;
+						}
+					}
+					resultados [0] = ( 1 - sum );
+					sum = 0 ;
+					document.write("<table border=2>");
+					document.write("<tr><td>Tiempo</td><td>probabilidad</td><td>sumaprobabilidad</td></tr>");
+					for ( t = 0 ; t <= limitesistema ; t ++ ) {
+						sum = sum + parseFloat(resultados [t]);
+						document.write("<tr><td>"+(t)+"</td><td>"+resultados[t]+"</td><td>"+sum+"</td></tr>");
+						if ( sum >= 1 ) {
+							t = limitesistema;
+						}
+					}				
+					document.write("</table>");
+				}
+				document.write("<a href='colastipomm1-5-1.html'>volver</a>");
+			}
+			
+			function sistema(){
+				var lambda = document.getElementById("lambda").value;
+				var miu = document.getElementById("mu").value;
+				var cantidad = document.getElementById("nroservidor").value;	
+				if ( cantidad > 0 && cantidad < 2 ) {
+				//condición de estabilidad Lambda entre miu menor a uno
+					if ( ( lambda / miu ) < 1 ) {
+						sistemamm1();
+						die();
+					}
+					else {
+						alert("no se puede resolver este ejercicio");
+						die();
+					}
+					
+				}
+				else {
+					if ( lambda < ( cantidad * miu ) ) {
+						sistemammc();
+						die();
+					}
+					else {
+						alert("no se puede resolver este ejercicio");
+						die();
+					}
+				}
+			}
+			function sistemamm1() {
+				numeroescena = prompt("ingrese el número de escenarios");
+				var lambda = document.getElementById("lambda").value;
+				var miu = document.getElementById("mu").value;
+				var cantidad = document.getElementById("nroservidor").value;
+				var ls = lambda / ( miu - lambda ) ;
+				var rho = lambda / ( cantidad * miu ) ;
+				var ws = 1 / ( miu - lambda ) ;
+				var lq = Math.pow( ( lambda / miu ) , 2 ) / ( 1 - ( lambda / miu ) ) ;
+				var wq = ( Math.pow( ( lambda / miu ) , 2 ) / ( 1 - ( lambda / miu ) ) ) / lambda ;
+				document.write("<center><table>");
+				document.write("<tr><td> Lambda &lambda; = " + lambda + "</td><td>Mu &mu;= " + miu + "</td></tr>");
+				document.write("<tr><td> Lambda eff = " + lambda + "</td><td>Rho/c = " + rho + "</td></tr>");
+				document.write("<tr><td>L<sub>s</sub> = " + ls + "</td><td>L<sub>q</sub> = " + lq + "</td></tr>");
+				document.write("<tr><td>W<sub>s</sub> = " + ws + "</td><td>W<sub>q</sub> = " + wq + "</td></tr>");
+				document.write("</table></center>");
+				if ( numeroescena > 1 ) {
+					numeroescena = numeroescena ;
+					var arla = new Array() ;
+					var armi = new Array();
+					arla [1] = lambda ;
+					armi [1] = miu ;
+					for ( var numes = 2 ; numes <= numeroescena ; numes ++ ) {
+						arla [numes] = prompt("inserte lambda de la escena" + numes ) ;
+						armi [numes] = prompt("inserte miu de la escena" + numes ) ;
+					}
+				}
+				else{
+					numeroescena = 1 ;
+				}
+				for ( var es = 1 ; es <= numeroescena ; es ++ ) {
+					if ( es > 1 ) {
+						lambda = arla [es] ;
+						miu = armi [es] ;
+					}
+					document.write("<br><h1>Escenario" + es + "</h1><br>");
+					document.write("<table>");
+					var sum = 0 , resultado = 0 ;
+					for ( var n = 0 ; n < 500 ; n ++ ) {
+						resultado = ( 1 - ( lambda / miu ) ) * Math.pow( ( lambda / miu ) , n ) ;
+						sum = sum + resultado ;
+						document.write("<tr><td>"+n+"</td><td>= "+resultado+"</td><td>"+sum+"</tr>");
+						if ( sum >= 1 ) {
+							n = 500 ;
+						}
+					}
+					document.write("</table>");
+				}
+				document.write("<a href='colastipomm1-5-1.html'>volver</a>");
+			}
+			
+			
+			
+			function sistemammc() {
+				numeroescena = prompt("ingrese el número de escenarios");
+				var lambda = document.getElementById("lambda").value;
+				var miu = document.getElementById("mu").value;
+				var em = document.getElementById("nroservidor").value;
+				var resultado = 0 , nfac = 1 , mfac = 1 , sum = 0 ;
+				for ( var n = 0 ; n < em ; n ++ ) {
+				//buscando el factorial
+					for ( var mul = 0 ; mul <= n ; mul ++ ) {
+						if ( mul > 0 ) {
+							nfac = nfac * mul ;
+						}
+						else {
+							nfac = 1 ;
+						}
+					}
+					sum = sum + ( 1 / nfac ) * Math.pow( lambda / miu , n ) ;
+				}
+				for ( var m = 0 ; m <= em ; m ++ ) {
+					if ( m > 0 ) {
+						mfac = mfac * m ;
+					}
+					else {
+						mfac = 1 ;
+					}
+				}
+				sum = sum + ( ( 1 / mfac ) * Math.pow( lambda / miu , em ) * ( ( em * miu ) / ( em * miu - lambda ) ) ) ;
+				var probcero = 1 / sum ;
+				sum = probcero ;
+				for ( var mul = 0 ; mul < em ; mul ++ ) {
+					if ( mul > 0 ) {
+						nfac = nfac * mul ;
+					}
+					else {
+						nfac = 1 ;
+					}
+				}
+				var ls = ( ( lambda * miu * Math.pow( lambda / miu , em ) ) / ( nfac * Math.pow( em * miu - lambda , 2 ) ) ) * sum + ( lambda / miu ) ;
+				var ws = ( ( miu * Math.pow( lambda / miu , em ) ) / ( nfac * Math.pow( em * miu - lambda , 2 ) ) ) * sum + ( 1 / miu ) ;
+				var rho = lambda / ( em * miu ) ;
+				var lq = ( ( ( Math.pow( ( lambda / miu ) , em ) * probcero ) / mfac ) / ( 1 - ( lambda / ( em * miu ) ) ) ) * ( ( lambda / ( em * miu ) ) / ( 1 - ( lambda / ( em * miu ) ) ) ) ;
+				var wq = ( probcero * ( Math.pow( ( lambda / miu ) , em ) / mfac ) * ( ( lambda / ( em * miu ) ) / Math.pow( ( 1 - ( lambda / ( em * miu ) ) ) , 2 ) ) ) / lambda ;
+				document.write("<center><table>");
+				document.write("<tr><td> Lambda &lambda; = "+lambda+"</td><td>Mu &mu;= "+miu+"</td></tr>");
+				document.write("<tr><td> Lambda eff = "+lambda+"</td><td>Rho/c = "+rho+"</td></tr>");
+				document.write("<tr><td>L<sub>s</sub> = "+ls+"</td><td>L<sub>q</sub> = "+lq+"</td></tr>");
+				document.write("<tr><td>W<sub>s</sub> = "+ws+" </td><td>W<sub>q</sub> = "+wq+"</td></tr>");
+				document.write("</table></center>");
+				if ( numeroescena > 1 ) {
+					numeroescena = numeroescena ;
+					var arla = new Array() ;
+					var armi = new Array() ;
+					arla [1] = lambda ;
+					armi [1] = miu ;
+					for ( var numes = 2 ; numes <= numeroescena ; numes ++ ) {
+						arla [numes] = prompt("inserte lambda de la escena" + numes);
+						armi [numes] = prompt("inserte miu de la escena" + numes);
+					}
+				}
+				else{
+					numeroescena = 1 ;
+				}
+				for ( var es = 1 ; es <= numeroescena ; es ++ ) {
+					if ( es > 1 ) {
+						lambda = arla [es] ;
+						miu = armi [es] ;
+					}
+					if ( lambda < ( miu * em ) ) {
+						var sum = probcero;
+						document.write("<br><h1>Escenario"+es+"</h1><br>");
+						document.write("<table>");
+						document.write("<tr><td>"+0+"</td><td>= "+probcero+"</td><td>"+sum+"</tr>");
+						for ( var n = 1 ; n < 100 ; n ++ ) {
+								for ( var mul = 0 ; mul <= n ; mul ++ ) {
+									if ( mul > 0 ) {
+										nfac = nfac * mul ;
+									}
+									else {
+										nfac = 1 ;
+									}
+								}
+								if ( n > 0 ) {
+									if ( n > em ) {
+										resultado = ( Math.pow( ( lambda / miu ) , n ) * probcero ) / ( mfac * Math.pow( em , ( n - em ) ) ) ;
+									}
+									else {
+										resultado = ( Math.pow( ( lambda / miu ) , n ) * probcero ) / nfac ;
+									}
+								}
+							sum = sum + resultado ;
+							document.write("<tr><td>"+n+"</td><td>= "+resultado+"</td><td>"+sum+"</tr>");
+							if ( sum > 1 ) {
+								n = 100 ;
+							}
+						
+						}
+						document.write("</table>");
+					}
+					else {
+						document.write("no se puede calcular para el escenario "+es);
+					}
+				}
+				document.write("<a href='colastipomm1-5-1.html'>volver</a>");
+			
+			}
+			function sistemamgd1() {
+			//	numeroescena=prompt("ingrese el número de escenarios");
+				var lambda = document.getElementById("lambda").value;
+				var miu = document.getElementById("mu").value;
+				var cantidad = document.getElementById("limitesistema").value;
+				var resultado = 0 ;
+				var sumaprob2 = 0 ;
+				if ( lambda == miu ) {
+					resultado = 1 / ( cantidad + 1 ) ;
+				}
+				else {
+					resultado = ( Math.pow( ( lambda / miu ) , cantidad ) * ( ( 1 - ( lambda / miu ) ) ) / ( 1 - Math.pow( ( lambda / miu ) , ( cantidad + 1 ) ) ) ) ;
+				}
+				lambdaef = lambda - ( lambda * resultado ) ;
+				for ( var n = 1 ; n <= cantidad ; n ++ ) {
+					resultado = Math.pow( ( lambda / miu ) , n ) * ( ( 1 - ( lambda / miu ) ) / ( 1 - Math.pow( ( lambda / miu ) , ( cantidad + 1 ) ) ) ) ;
+					sumaprob2 = sumaprob2 + ( ( n ) * resultado ) ;
+				}
+				if ( lambda == miu ) {
+					sumaprob2 = lambdaef-(1/cantidad);
+				}
+				ls = sumaprob2 ;
+				if ( lambda == miu ) {
+					var probbcero = 1 / ( cantidad + 1 ) ;
+				} 
+				else {
+					var probbcero = ( 1 - ( lambda / miu ) ) / ( 1 - Math.pow( ( lambda / miu ) , cantidad + 1 ) ) ;
+				}
+				var lq = ls - ( 1 - probbcero ) ;
+				/*if ( lambda == miu ) {
+					resultado = 1 / ( cantidad + 1 ) ;
+				}
+				else {
+					resultado = ( Math.pow( ( lambda / miu ) , cantidad ) * ( ( 1 - ( lambda / miu ) ) ) / ( 1 - Math.pow( ( lambda / miu ) , ( cantidad + 1 ) ) ) ) ;
+				}
+				lambdaef = lambda - ( lambda * resultado ) ;*/
+				var ws = ls / lambdaef ;
+				var wq = lq / lambdaef ;
+				var rho = lambda / miu ;
+				document.write("<center><table>");
+				document.write("<tr><td> Lambda &lambda; = " + lambda + "</td><td>Mu &mu;= "+miu+"</td></tr>");
+				document.write("<tr><td> Lambda eff = " + lambdaef + "</td><td>Rho/c = "+rho+" </td></tr>");
+				document.write("<tr><td>L<sub>s</sub> = " + ls + "</td><td>L<sub>q</sub> = "+lq+" </td></tr>");
+				document.write("<tr><td>W<sub>s</sub> = " + ws + "</td><td>W<sub>q</sub> = "+wq+"</td></tr>");
+				document.write("</table></center>");
+				
+				var sumaprob = 0;
+				if ( lambda == miu ) {
+					document.write("<table border='2'>");
+					document.write("<tr><td>N</td><td>Probabilidad</td><td>sumaprobabilidad</td>");
+					for ( var n1 = 0 ; n1 < cantidad ; n1 ++ ) {
+						resultado = 1 / ( cantidad + 1 ) ;
+						sumaprob = sumaprob + resultado ;
+						document.write("<tr>")
+						document.write("<td>"+n1+"</td><td>"+resultado+"</td><td>"+sumaprob+"</td><br>");
+						document.write("</tr>")
+					}
+					document.write("</table>")
+				}
+				else
+				{
+					document.write("<table border='2'>");
+					document.write("<tr><td>N</td><td>Probabilidad</td><td>sumaprobabilidad</td>");
+					for(var n = 0 ; n < cantidad ; n ++ ) {
+						resultado = Math.pow( ( lambda / miu ) , n ) * ( ( 1 - ( lambda / miu ) ) / ( 1 - Math.pow( ( lambda / miu ) , ( cantidad + 1 ) ) ) ) ;
+						sumaprob = sumaprob + resultado ;
+						document.write("<tr>")
+						document.write("<td>"+n+"</td><td>"+resultado+"</td><td>"+sumaprob+"</td><br>");
+						document.write("</tr>")
+						
+					}
+					document.write("</table>")
+				}
+				document.write("<a href='colastipomm1-5-1.html'>volver</a>");
+			}
+		}
+		</script>
+	</head>
+	<body>
+		<h1>Bienvenidos a este enlace de soluciones de teoría de colas</h1>
+		<form>
+			<div class="form-group" >
+				<label form="lambda" >inserte &lambda;</label>
+				<input type="text" name="lambda" value="0"  id="lambda" class="form-control"  >
+			</div>
+			<div class="form-group" >
+				<label form="mu" >inserte &mu;</label>
+				<input type="text" name="mu" value="0"  id="mu" class="form-control"  >
+			</div>
+			<div class="form-group" >
+				<label form="nroservidor" >inserte en número de servidores</label>
+				<input type="text" name="nroservidor" value="0"  id="nroservidor" class="form-control"  >
+			</div>
+			<div class="form-group" >
+				<label form="limitesistema" >inserte el límite del sistema</label>
+				<input type="text" name="limitesistema" value="0"  id="limitesistema" class="form-control"  >
+			</div>
+			<div class="form-group" >
+				<label form="limiteorigen" >inserte source limit</label>
+				<input type="text" name="limiteorigen" value="0"  id="limiteorigen" class="form-control"  >
+			</div>
+			<div>
+				<button type="button"  class="btn btn-outline-success" onclick="resolver()">Enviar</button>
+			</div>
+		</form>
+	</body>
+</html>
